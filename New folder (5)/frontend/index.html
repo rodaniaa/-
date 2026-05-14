@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>الخلية المسيحية - مسابقة دينية</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  
+  <!-- Setup Screen -->
+  <div id="setup-screen" class="screen active">
+    <div class="setup-panel text-center">
+      <h1>الخلية المسيحية</h1>
+      <p>قم بتوصيل لون فريقك عبر اللوحة لتفوز!</p>
+      
+      <div class="teams-setup">
+        <div class="input-group team-red-input">
+          <label>اسم الفريق الأحمر (يمين-يسار):</label>
+          <input type="text" id="team1-name" placeholder="الفريق الأحمر" value="الفريق الأحمر">
+        </div>
+        <div class="input-group team-blue-input">
+          <label>اسم الفريق الأزرق (أعلى-أسفل):</label>
+          <input type="text" id="team2-name" placeholder="الفريق الأزرق" value="الفريق الأزرق">
+        </div>
+      </div>
+
+      <div class="game-settings">
+        <div class="settings-group">
+          <label>اختر التصنيف:</label>
+          <div class="category-grid">
+            <label class="cat-label"><input type="checkbox" class="category-checkbox" value="bible" checked> ديني مسيحي ✝️</label>
+            <label class="cat-label"><input type="checkbox" class="category-checkbox" value="general"> أسئلة عامة 🌍</label>
+            <label class="cat-label"><input type="checkbox" class="category-checkbox" value="history"> تاريخ 🏛️</label>
+            <label class="cat-label"><input type="checkbox" class="category-checkbox" value="science"> علوم 🔬</label>
+            <label class="cat-label"><input type="checkbox" class="category-checkbox" value="sports"> رياضة ⚽</label>
+            <label class="cat-label"><input type="checkbox" class="category-checkbox" value="tech"> تكنولوجيا 💻</label>
+            <label class="cat-label"><input type="checkbox" class="category-checkbox" value="engineering"> رياضيات وهندسة 📐</label>
+            <label class="cat-label"><input type="checkbox" class="category-checkbox" value="medicine"> طب 🩺</label>
+            <label class="cat-label"><input type="checkbox" class="category-checkbox" value="puzzles"> ألغاز وفوازير 🧩</label>
+            <label class="cat-label"><input type="checkbox" class="category-checkbox" value="geography"> جغرافيا 🗺️</label>
+            <label class="cat-label"><input type="checkbox" class="category-checkbox" value="arabic"> لغة عربية 📖</label>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <label>مستوى الصعوبة:</label>
+          <select id="difficulty-select" class="custom-select">
+            <option value="متنوع">متنوع ⚪</option>
+            <option value="سهل">سهل 🟢</option>
+            <option value="متوسط">متوسط 🟡</option>
+            <option value="صعب">صعب 🔴</option>
+          </select>
+        </div>
+      </div>
+
+      <button id="start-game-btn" class="primary-btn" style="margin-top: 20px;">ابدأ اللعب</button>
+    </div>
+  </div>
+
+  <!-- Game Screen -->
+  <div id="game-screen" class="screen">
+    <div class="game-header">
+      <div class="team-score red-team">
+        <h2 id="display-team1">الفريق الأحمر</h2>
+      </div>
+      <div class="title-area">
+        <h1>الخلية المسيحية</h1>
+      </div>
+      <div class="team-score blue-team">
+        <h2 id="display-team2">الفريق الأزرق</h2>
+      </div>
+    </div>
+
+    <div class="board-container">
+      <div class="hex-board" id="hex-board">
+        <!-- Hexagons will be injected here by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Question Modal -->
+  <div id="question-modal" class="modal">
+    <div class="modal-content text-center">
+      
+      <!-- View 1: Before revealing question -->
+      <div id="modal-initial-view">
+        <div class="letter-display">الحرف: <span id="initial-letter" class="highlight-letter"></span></div>
+        <button id="reveal-question-btn" class="reveal-btn">إظهار السؤال 👁️</button>
+        <button id="close-initial-btn" class="close-btn" style="margin-top: 20px;">إغلاق</button>
+      </div>
+
+      <!-- View 2: After revealing question -->
+      <div id="modal-question-view" class="hidden">
+        <div class="letter-display">الحرف: <span id="question-letter" class="highlight-letter"></span></div>
+        
+        <div class="badges-container">
+          <span class="badge difficulty-badge" id="modal-difficulty"></span>
+          <span class="badge category-badge" id="modal-category"></span>
+        </div>
+        
+        <h3 id="modal-question-text" class="question-text"></h3>
+        
+        <div class="answer-box">
+          <span id="modal-answer-text"></span>
+        </div>
+        
+        <p class="eval-text">من أجاب بشكل صحيح؟ (تقييم يدوي)</p>
+        
+        <div class="action-buttons-grid">
+          <button class="award-btn blue-btn" id="award-blue-btn">الفريق الأزرق</button>
+          <button class="award-btn red-btn" id="award-red-btn">الفريق الأحمر</button>
+          <button class="award-btn cancel-btn" id="close-modal-btn">إغلاق وإلغاء ❌</button>
+          <button class="award-btn change-btn" id="change-question-btn">تغيير السؤال 🔄</button>
+          <!-- hidden clear button for logic -->
+          <button id="clear-cell-btn" class="hidden"></button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Winner Modal -->
+  <div id="winner-modal" class="modal">
+    <div class="modal-content text-center">
+      <h1>مبروك!</h1>
+      <h2 id="winner-text">الفريق الفائز</h2>
+      <p>لقد نجح الفريق في توصيل المسار بالكامل!</p>
+      <button id="restart-game-btn" class="primary-btn">لعبة جديدة</button>
+    </div>
+  </div>
+
+  <!-- Confetti Canvas (Optional overlay, but the library auto-injects if not provided) -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="all_questions.js?v=2"></script>
+  <script src="script.js?v=2"></script>
+</body>
+</html>
